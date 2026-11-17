@@ -46,6 +46,16 @@ jobs:
             exit 1
           fi
 
+      - name: Headless gameplay boot smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path . --quit-after 30 2>&1 | tee godot-smoke.log
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Invalid call\.|Invalid access to property|Failed to load script|ERROR:.*res://' godot-smoke.log; then
+            echo "Game startup produced an error"
+            exit 1
+          fi
+
       - name: Build Android debug APK
         shell: bash
         env:
@@ -76,6 +86,7 @@ jobs:
           path: |
             godot-import.log
             godot-export.log
+            godot-smoke.log
           if-no-files-found: warn
           retention-days: 7
 
@@ -99,9 +110,9 @@ jobs:
       - name: Publish or update alpha release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.0-alpha
-          name: Tribun Arena - Android Alpha 0.1
-          body: "First experimental playable 2D Android alpha. Debug-signed APK. Development build; not a finished 3D or online football game."
+          tag_name: v0.2.0-alpha
+          name: Tribun Arena 3D - Android Alpha 0.2
+          body: "3D football alpha with low-poly procedural stadium, 7v7 offline matches, career, cup, training, 3 formations and touch controls. Debug-signed Android APK; offline alpha, not a commercial-grade football simulator."
           prerelease: true
           make_latest: false
           files: release/TribunArena-debug.apk
