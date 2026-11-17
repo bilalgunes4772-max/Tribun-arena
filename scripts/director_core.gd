@@ -279,6 +279,15 @@ func weekly_training() -> void:
 		if bool(p["starter"]):count+=1
 	if count<11:
 		var fresh: Array[Dictionary]=my_players()
+		var has_keeper: bool=false
+		for p in footballers:
+			if int(p["club"])==0 and bool(p["starter"]) and str(p["pos"])=="KL":has_keeper=true
+		if not has_keeper:
+			for p in fresh:
+				if str(p["pos"])=="KL" and int(p["injury"])==0 and not bool(p["starter"]):
+					p["starter"]=true
+					count+=1
+					break
 		for p in fresh:
 			if count>=11:break
 			if not bool(p["starter"]) and int(p["injury"])==0:
