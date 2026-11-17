@@ -1,23 +1,40 @@
-# TRIBUN ARENA 3D · 0.2 ALPHA
+# TRIBUN ARENA DIRECTOR — 0.3 ALFA
 
-Godot 4.4.1 ile yapılan, Android'de çevrimdışı çalışmak üzere geliştirilmiş bağımsız 3D futbol oyunu. Ücretsiz ve lisanssız, özgün kurgusal kulüpler.
+**Türkçe, çevrimdışı, PC futbol menajerliği türünü telefonun yatay ekranına taşıyan özgün bir Godot projesi.**
 
-## Yeni özellikler
-- **Prosedürel 3D gece stadyumu**: sahneye özel tribünler, ~1650 seyirci, kale ağları, çevre LED'leri, projektörler, yayın kamerası.
-- **7'ye 7 gerçek zamanlı maç**: 3D futbolcular, hareket animasyonları, top fiziği, pas/şut/top kapma, sprint, oyuncu değiştirme, kaleciler ve rakip yapay zekâsı.
-- **Mobil çoklu dokunma**: joystick ve aynı anda basılabilen dokunmatik aksiyon tuşları.
-- **Kariyer**: 8 özgün kurgusal kulüp, 14 maçlık lig, puan tablosu, transfer yerine kalıcı hücum/savunma/kondisyon geliştirme, şampiyonluk, kalıcı kayıt.
-- **Ek oyun modları**: Hızlı Maç, 4 turlu Eleme Kupası, süreli Şut Antrenmanı.
-- **Taktikler**: 2-2-2, 3-2-1, 2-3-1; Dengeli, Yüksek Pres, Kontra.
-- **Denge**: 3 yapay zekâ zorluğu, galibiyet ödülleri, kalıcı bütçe.
+> Bu oyun Football Manager / FM27 markasıyla bağlantılı değildir. FM'in görselleri, arayüzleri, oyunu veya ticari futbolcu veritabanı kullanılmamıştır. PC seviyesi hedeflenen bir geliştirme projesidir; mevcut APK tam teşekküllü bir FM27 kopyası değildir.
 
-## Android APK
-GitHub Actions -> Android APK iş akışı başarılı olursa aynı APK GitHub Releases altındaki v0.2.0-alpha sürümüne otomatik yüklenir.
+## Kapsam — bu sürümde uygulanmış sistemler
 
-[Releases](https://github.com/bilalgunes4772-max/Tribun-arena/releases)
+- 12 kurgusal kulüp, 264+ kurgusal oyuncu, 22 maç haftası, çift devreli gerçek fikstür, puan durumu, haftalık rakip sonuçları ve yeni sezon.
+- 11 kontrol ekranı: Merkez, Kadro, Taktik, Transfer, Scout, Antrenman, Finans, Altyapı, Personel, Lig ve Haberler; maç merkezinde ayrıca canlı olaylar.
+- Oyuncular için pozisyon, yaş, 7 yetenek alanı, fiziksel kondisyon, moral, gizli potansiyel, kontrat süresi, haftalık maaş, piyasa değeri, sakatlık ve rol.
+- İlk 11 seçimleri, otomatik 11, oyuncu rol değişimi, sözleşme yenileme, oyuncu satışı.
+- Rakip kulüplere transfer teklifleri (%105 / %130), teklif reddi, bütçe kısıtı, maaş etkisi, scouting kararı, sonraki haftaya yetişen raporlar.
+- Topa sahipken ve değilken ayrı dizilişler, mentalite, pres, tempo, genişlik ve antrenman ile bağlantılı taktik etkinliği.
+- İlk yarı + devre arası taktik müdahalesi + ikinci yarı olarak yönetilen olaylı maç simülasyonu. Şut, beklenen gol (xG), skor, haber akışı, maç primi ve haftalık lig sonuçları.
+- Antrenman odağı ve yoğunluğu, kondisyon/sakatlık etkisi, teknik ekibi geliştirme.
+- Haftalık maaş, sponsor gelirleri, stadyum bakım maliyeti, transfer gider ve gelirleri, mali hareket dökümü.
+- Altyapı tesisleri, kurgusal genç yetenek üretimi, çalışanların farklı birimlerde seviye atlaması.
+- JSON ile yerel kalıcı kayıt; APK çevrimdışı çalışmak üzere tasarlanmıştır.
+- Otomatik Godot testleri: futbolcu, fikstür, kaleci sakatlığı, sezon simülasyonu, transfer, scouting, lig, kayıt ve 11 ekran.
 
-## Klavye kontrolleri
-WASD/Ok tuşları hareket • J pas • K şut • L müdahale • Space oyuncu değiştir • ESC maçtan çık
+## Android
 
-## Yapım durumu ve sınırlar
-Bu **0.2 alpha** oynanabilir prototipidir, bitmiş EA FC/eFootball kalitesinde oyun değildir. Kulüpler kurgusaldır; 3D modeller low-poly ve prosedüreldir. Gerçek çok oyunculu sunucu, lisanslı oyuncular, transfer açık artırması, spiker/ses/müzik ve gelişmiş animasyonlar bu sürümde henüz yoktur. GitHub CI derleme başarısı telefon performans/oynanış testi anlamına gelmez.
+GitHub Actions üzerindeki **Android APK** iş akışı yeşile döndüğünde, program doğrudan şu sayfada APK yayınlar:
+
+- https://github.com/bilalgunes4772-max/Tribun-arena/releases/tag/v0.3.0-alpha
+- İndirilecek dosya: `TribunArena-debug.apk`
+
+## Geliştirme hedefleri — mevcut değil
+
+Bu versiyon **ilk gerçek menajerlik alfa sürümüdür.** Tam PC seviyesi futbol evreni, birden çok ülke/lig/piramit, gerçek veri lisansları, ileri düzey scout gizliliği, temsilci görüşmeleri, canlı 2D/3D maç görünümü, derin basın etkileşimleri, kulüp yönetimi ve çevrimiçi rekabet henüz tamamlanmadı. Menajerlik simülasyonundaki bazı parametreler basitleştirilmiş ve oyun dengesi gerçek cihaz testleriyle iyileştirilmelidir.
+
+## Test
+
+```bash
+godot --headless --path . --editor --quit
+godot --headless --path . --script res://tests/director_qa.gd
+```
+
+Godot 4.4.1 / Android arm64, Compatibility renderer.
