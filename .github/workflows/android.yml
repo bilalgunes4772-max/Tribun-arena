@@ -36,8 +36,12 @@ jobs:
       - name: Import Godot project
         shell: bash
         run: |
-          set -o pipefail
+          set -euo pipefail
           godot --headless --path . --editor --quit --verbose 2>&1 | tee godot-import.log
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Failed to load script|Failed to load resource' godot-import.log; then
+            echo "Godot imported the project with script/resource errors"
+            exit 1
+          fi
 
       - name: Build Android debug APK
         shell: bash
