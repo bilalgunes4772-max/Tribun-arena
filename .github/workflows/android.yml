@@ -56,6 +56,17 @@ jobs:
             exit 1
           fi
 
+      - name: Run automated 3D match and career regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path . --script res://tests/qa_match.gd 2>&1 | tee godot-game-tests.log
+          grep -q "FULL GAME QA PASSED" godot-game-tests.log
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Invalid call\\.|Invalid access to property|Failed to load script|ERROR:.*res://' godot-game-tests.log; then
+            echo "Gameplay regression failed"
+            exit 1
+          fi
+
       - name: Build Android debug APK
         shell: bash
         env:
@@ -87,6 +98,7 @@ jobs:
             godot-import.log
             godot-export.log
             godot-smoke.log
+            godot-game-tests.log
           if-no-files-found: warn
           retention-days: 7
 
