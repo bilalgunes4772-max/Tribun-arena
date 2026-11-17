@@ -248,15 +248,20 @@ func finish_game() -> void:
 		save_game()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if not event.pressed or event.echo: return
+	if not (event is InputEventKey):
+		return
+	var key: InputEventKey = event as InputEventKey
+	if not key.pressed or key.echo:
+		return
 	if page == "match":
-		match event.keycode:
+		match key.keycode:
 			KEY_J: pass_ball()
 			KEY_K: shoot_ball()
 			KEY_L: tackle()
 			KEY_SPACE: switch_player()
 			KEY_ESCAPE: finish_game()
-	elif event.keycode == KEY_ENTER: begin_match(false)
+	elif key.keycode == KEY_ENTER:
+		begin_match(false)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
