@@ -271,10 +271,12 @@ func weekly_training() -> void:
 				target["known"]=true
 				push_news("Scout raporu hazır",str(target["name"])+" hakkında tam yetenek ve piyasa raporu hazır.")
 			pending_scout.erase(pending)
-	# Prevent injury-forced empty slots without invalidating manually chosen valid XI.
+	# Injured starters leave the selection; replace them with fit reserves.
 	var count: int=0
 	for p in footballers:
-		if int(p["club"])==0 and bool(p["starter"]) and int(p["injury"])==0:count+=1
+		if int(p["club"])!=0:continue
+		if int(p["injury"])>0 and bool(p["starter"]):p["starter"]=false
+		if bool(p["starter"]):count+=1
 	if count<11:
 		var fresh: Array[Dictionary]=my_players()
 		for p in fresh:
@@ -408,6 +410,10 @@ func kickoff() -> String:
 	if not current_match.is_empty():return "Maç devam ediyor."
 	if round_no>=fixtures.size():return "Sezon bitti; yeni sezonu başlat."
 	if starter_count()!=11:return "Maça çıkmak için ilk 11'de 11 oyuncu gerekli."
+	var gk_count: int=0
+	for p in footballers:
+		if int(p["club"])==0 and bool(p["starter"]) and str(p["pos"])=="KL" and int(p["injury"])==0:gk_count+=1
+	if gk_count!=1:return "İlk 11'de bir kaleci olmalı."
 	var pair: Array=next_fixture()
 	if pair.is_empty():return "Fikstür bulunamadı."
 	current_match={"home":int(pair[0]),"away":int(pair[1]),"gh":0,"ga":0,
