@@ -1,6 +1,7 @@
 extends Control
 ## TRIBUN ARENA DIRECTOR mobile UI: dense PC-style information, touch-friendly controls.
 const CORE = preload("res://scripts/director_core.gd")
+const PITCH_BOARD = preload("res://scripts/tactical_board.gd")
 const BG := Color("#09121f")
 const PANEL := Color("#112239")
 const PANEL2 := Color("#182c43")
@@ -313,6 +314,15 @@ func tactics() -> void:
 	var top: VBoxContainer=block("TAKTİK LABORATUVARI","PC düzeyinde iki evreli planlama: hücumdayken ve top rakipteyken farklı dizilişler.")
 	metrics(top,["TAKTİK ETKİNLİĞİ","OYUN ANLAYIŞI","TAKIM UYUMU"],
 		[str(roundi(sim.training_effectiveness()))+"%",str(roundi(sim.familiarity))+"%",str(roundi(sim.cohesion))+"%"],[GOLD,TEAL,TEAL])
+	var formation_pitches: HBoxContainer=hrow(12)
+	top.add_child(formation_pitches)
+	for phase in range(2):
+		var diagram: Control=PITCH_BOARD.new()
+		diagram.phase=phase
+		diagram.formation_index=sim.formation_on if phase==0 else sim.formation_off
+		diagram.title_text=("TOP BİZDE  /  "+sim.FORMATIONS[sim.formation_on]) if phase==0 else ("TOP RAKİPTE  /  "+sim.FORMATIONS[sim.formation_off])
+		diagram.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+		formation_pitches.add_child(diagram)
 	option_row(top,"TOPA SAHİPKEN DİZİLİŞ",sim.FORMATIONS[sim.formation_on],"on","Top sendeyken hücum genişliğini ve rollerin yönünü belirler.")
 	option_row(top,"TOP RAKİPTEYKEN DİZİLİŞ",sim.FORMATIONS[sim.formation_off],"off","Takım savunmaya geçtiğinde başka bir şekle dönüşür.")
 	option_row(top,"MENTALİTE",sim.MENTALITIES[sim.mentality],"mentality","Fırsat üretimi ile savunma güvenliği arasındaki denge.")
