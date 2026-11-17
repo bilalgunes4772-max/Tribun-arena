@@ -4,6 +4,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   android:
     runs-on: ubuntu-24.04
@@ -75,3 +78,31 @@ jobs:
             godot-export.log
           if-no-files-found: warn
           retention-days: 7
+
+  publish:
+    name: Publish public APK download
+    runs-on: ubuntu-24.04
+    needs: android
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Download APK from successful build
+        uses: actions/download-artifact@v4
+        with:
+          name: TribunArena-Android-APK
+          path: release
+      - name: Validate APK before release
+        shell: bash
+        run: |
+          test -s release/TribunArena-debug.apk
+          file release/TribunArena-debug.apk
+          sha256sum release/TribunArena-debug.apk
+      - name: Publish or update alpha release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.0-alpha
+          name: Tribun Arena - Android Alpha 0.1
+          body: "First experimental playable 2D Android alpha. Debug-signed APK. Development build; not a finished 3D or online football game."
+          prerelease: true
+          make_latest: false
+          files: release/TribunArena-debug.apk
+          fail_on_unmatched_files: true
