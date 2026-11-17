@@ -100,12 +100,12 @@ func build_ground() -> void:
 	line(Vector2(0,-30),Vector2(0,30))
 	arc(Vector2.ZERO,9.15)
 	for side in [-1.0,1.0]:
-		var outer_x := side*50.0
-		var inner_x := side*33.5
+		var outer_x: float = side*50.0
+		var inner_x: float = side*33.5
 		line(Vector2(outer_x,-20.16),Vector2(inner_x,-20.16))
 		line(Vector2(inner_x,-20.16),Vector2(inner_x,20.16))
 		line(Vector2(inner_x,20.16),Vector2(outer_x,20.16))
-		var gx := side*44.5
+		var gx: float = side*44.5
 		line(Vector2(outer_x,-9.1),Vector2(gx,-9.1))
 		line(Vector2(gx,-9.1),Vector2(gx,9.1))
 		line(Vector2(gx,9.1),Vector2(outer_x,9.1))
@@ -114,8 +114,8 @@ func build_ground() -> void:
 
 func build_goals() -> void:
 	for side in [-1.0,1.0]:
-		var near_x := side*50.0
-		var far_x := side*53.0
+		var near_x: float = side*50.0
+		var far_x: float = side*53.0
 		var left_z := -5.1
 		var right_z := 5.1
 		var white := Color("#f4f6f8")
