@@ -112,7 +112,7 @@ func update_match(dt: float) -> void:
 			var kx := 170.0 if p.team == 0 else 1110.0
 			target = (Vector2(kx,clampf(ball.y,220,500))-position).normalized()
 		else:
-			var interested := (ball_owner == -1 or (ball_owner >= 0 and players[ball_owner].team != p.team))
+			var interested: bool = (ball_owner == -1 or (ball_owner >= 0 and int(players[ball_owner].team) != int(p.team)))
 			var closest := nearest_player(int(p.team),ball)
 			if interested and closest == i:
 				target = (ball-position).normalized()
