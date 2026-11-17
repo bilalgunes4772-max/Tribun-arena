@@ -18,6 +18,26 @@ func _run() -> void:
 	if game.starter_count()!=11:
 		fail_with("starting eleven generation",2)
 		return
+	var keeper: Dictionary={}
+	for candidate in game.my_players():
+		if str(candidate["pos"])=="KL" and bool(candidate["starter"]):
+			keeper=candidate
+			break
+	if keeper.is_empty():
+		fail_with("no keeper in starter squad",21)
+		return
+	keeper["injury"]=3
+	game.weekly_training()
+	if game.starter_count()!=11:
+		fail_with("injured first-choice keeper was not automatically replaced",22)
+		return
+	var fit_keeper: bool=false
+	for candidate in game.my_players():
+		if str(candidate["pos"])=="KL" and bool(candidate["starter"]) and int(candidate["injury"])==0:
+			fit_keeper=true
+	if not fit_keeper:
+		fail_with("no fit keeper was promoted",23)
+		return
 	var effectiveness: float=game.training_effectiveness()
 	if effectiveness<20.0 or effectiveness>99.0:
 		fail_with("tactical effectiveness range",3)
