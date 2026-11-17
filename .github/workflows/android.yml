@@ -12,40 +12,46 @@ jobs:
       image: barichello/godot-ci:4.4.1
     steps:
       - uses: actions/checkout@v4
-      - name: Verify build environment
+      - name: Prepare Godot templates and Android SDK settings
         shell: bash
         run: |
-          set -euxo pipefail
-          command -v godot
+          set -euo pipefail
+          echo "Godot HOME: $HOME"
+          echo "Setting up export assets installed in Docker image under /root"
+          mkdir -p "$HOME/.local/share/godot/export_templates" "$HOME/.config/godot" "$HOME/.android"
+          cp -a /root/.local/share/godot/export_templates/4.4.1.stable "$HOME/.local/share/godot/export_templates/"
+          cp /root/.config/godot/editor_settings-4.4.tres "$HOME/.config/godot/editor_settings-4.4.tres"
+          cp /root/debug.keystore "$HOME/.android/debug.keystore"
+          test -s "$HOME/.local/share/godot/export_templates/4.4.1.stable/android_debug.apk"
+          test -s "$HOME/.local/share/godot/export_templates/4.4.1.stable/android_release.apk"
+          test -x /usr/lib/jvm/java-17-openjdk-amd64/bin/java
+          test -d /usr/lib/android-sdk
+          test -s "$HOME/.android/debug.keystore"
+          grep 'export/android/java_sdk_path' "$HOME/.config/godot/editor_settings-4.4.tres"
+          grep 'export/android/android_sdk_path' "$HOME/.config/godot/editor_settings-4.4.tres"
           godot --headless --version
-          command -v keytool
-          echo "ANDROID_HOME=${ANDROID_HOME:-unset}"
-          ls -la scenes scripts
+          java -version
+          ls -lh "$HOME/.local/share/godot/export_templates/4.4.1.stable/"android_*.apk
+
       - name: Import Godot project
         shell: bash
         run: |
           set -o pipefail
           godot --headless --path . --editor --quit --verbose 2>&1 | tee godot-import.log
-      - name: Create debug signing key
-        shell: bash
-        run: |
-          set -euxo pipefail
-          mkdir -p /root/.android
-          if [ ! -f /root/.android/debug.keystore ]; then
-            keytool -genkeypair -v -keystore /root/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-          fi
+
       - name: Build Android debug APK
         shell: bash
         env:
-          GODOT_ANDROID_KEYSTORE_DEBUG_PATH: /root/.android/debug.keystore
+          GODOT_ANDROID_KEYSTORE_DEBUG_PATH: /root/debug.keystore
           GODOT_ANDROID_KEYSTORE_DEBUG_USER: androiddebugkey
           GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: android
         run: |
-          set -o pipefail
+          set -euo pipefail
           mkdir -p build/android
           godot --headless --path . --verbose --export-debug "Android" build/android/TribunArena-debug.apk 2>&1 | tee godot-export.log
           test -s build/android/TribunArena-debug.apk
           ls -lh build/android/TribunArena-debug.apk
+
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
@@ -54,6 +60,7 @@ jobs:
           path: build/android/TribunArena-debug.apk
           if-no-files-found: error
           retention-days: 30
+
       - name: Upload diagnostic logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
