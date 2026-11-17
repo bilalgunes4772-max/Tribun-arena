@@ -62,11 +62,13 @@ func _run() -> void:
 	game.intensity=1
 	game.weekly_training()
 	for idx in range(21):
-		if game.kickoff().is_empty():
-			fail_with("season fixture "+str(idx),14)
+		var response: String=game.kickoff()
+		if game.current_match.is_empty() or int(game.current_match.get("half",0))!=1:
+			fail_with("season fixture not started "+str(idx)+" "+response,14)
 			return
-		if game.finish_match().is_empty():
-			fail_with("season simulation failed "+str(idx),15)
+		game.finish_match()
+		if int(game.current_match.get("half",0))!=2:
+			fail_with("season full time not reached "+str(idx),15)
 			return
 		game.close_match()
 	if game.round_no!=22:
