@@ -7,27 +7,60 @@ on:
 jobs:
   android:
     runs-on: ubuntu-24.04
+    timeout-minutes: 25
     container:
       image: barichello/godot-ci:4.4.1
     steps:
       - uses: actions/checkout@v4
-      - name: Import and verify project
-        run: godot --headless --path . --editor --quit
-      - name: Create debug signing key
+      - name: Verify build environment
+        shell: bash
         run: |
+          set -euxo pipefail
+          command -v godot
+          godot --headless --version
+          command -v keytool
+          echo "ANDROID_HOME=${ANDROID_HOME:-unset}"
+          ls -la scenes scripts
+      - name: Import Godot project
+        shell: bash
+        run: |
+          set -o pipefail
+          godot --headless --path . --editor --quit --verbose 2>&1 | tee godot-import.log
+      - name: Create debug signing key
+        shell: bash
+        run: |
+          set -euxo pipefail
           mkdir -p /root/.android
-          keytool -genkeypair -v -keystore /root/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-      - name: Build APK
+          if [ ! -f /root/.android/debug.keystore ]; then
+            keytool -genkeypair -v -keystore /root/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          fi
+      - name: Build Android debug APK
+        shell: bash
         env:
           GODOT_ANDROID_KEYSTORE_DEBUG_PATH: /root/.android/debug.keystore
           GODOT_ANDROID_KEYSTORE_DEBUG_USER: androiddebugkey
           GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: android
         run: |
+          set -o pipefail
           mkdir -p build/android
-          godot --headless --path . --export-debug "Android" build/android/TribunArena-debug.apk
+          godot --headless --path . --verbose --export-debug "Android" build/android/TribunArena-debug.apk 2>&1 | tee godot-export.log
           test -s build/android/TribunArena-debug.apk
-      - uses: actions/upload-artifact@v4
+          ls -lh build/android/TribunArena-debug.apk
+      - name: Upload APK
+        if: success()
+        uses: actions/upload-artifact@v4
         with:
           name: TribunArena-Android-APK
           path: build/android/TribunArena-debug.apk
+          if-no-files-found: error
           retention-days: 30
+      - name: Upload diagnostic logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TribunArena-Build-Logs
+          path: |
+            godot-import.log
+            godot-export.log
+          if-no-files-found: warn
+          retention-days: 7
